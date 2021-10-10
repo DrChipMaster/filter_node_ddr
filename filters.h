@@ -93,7 +93,7 @@ private:
      off_t ddr_ptr_base = 0x0F000000; // physical base address
      off_t configs_ptr_base =0xA0000000;  // physical base address
      u64 *ddr_pointer;
-     u64 *configs_pointer;
+     uint32_t *configs_pointer;
 
 };
 

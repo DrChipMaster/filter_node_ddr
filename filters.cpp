@@ -31,7 +31,7 @@ Filters::Filters()
         int fd;
         if ((fd = open("/dev/mem", O_RDWR | O_SYNC)) != -1) {
             ddr_pointer = (u64 *)mmap(NULL, ddr_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, ddr_ptr_base);
-            configs_pointer = (u64 *)mmap(NULL, configs_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, configs_ptr_base);
+            configs_pointer = (uint32_t *)mmap(NULL, configs_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, configs_ptr_base);
 
             hardware_ready=1;
         }
@@ -320,7 +320,7 @@ void Filters::do_hardwarefilter()
     cout << "Storing points!"<<endl;
     for (auto &point : *inputCloud)
     {
-        u64 point_compact=((int16_t)point.x*100)+(((int16_t)point.y*100)<<16)+(((int16_t)point.z*100)<<16*2)+(((int16_t)point.intensity)<<16*3);
+        u64 point_compact=((int16_t)point.x*100)+(((int16_t)point.y*100)<<16)+(((int16_t)point.z*100)<<16*2)+(((int8_t)point.intensity)<<16*3);
         ddr_pointer[i]= point_compact;
         i ++;
     }
