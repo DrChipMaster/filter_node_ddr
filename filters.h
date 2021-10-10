@@ -88,15 +88,13 @@ private:
 
 
      //Hardware parameters:
-     unsigned int bram_size = 0x40000;
-     off_t bram_x = 0xA0000000; // physical base address
-     off_t bram_y =0xA1000000;  // physical base address
-     off_t bram_z =0xA2000000; // physical base address
-     off_t bram_i =0xA3000000; // physical base address
-     u64 *bram_x_ptr;
-     u64 *bram_y_ptr;
-     u64 *bram_z_ptr;
-     u64 *bram_i_ptr;
+     unsigned int ddr_size = 0x060000;
+     unsigned int configs_size = 0x0003;
+     off_t ddr_ptr_base = 0x0F000000; // physical base address
+     off_t configs_ptr_base =0xA0000000;  // physical base address
+     u64 *ddr_pointer;
+     u64 *configs_pointer;
+
 };
 
 #endif // FILTERS_H

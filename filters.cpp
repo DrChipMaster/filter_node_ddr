@@ -30,10 +30,8 @@ Filters::Filters()
     hardware_ready = 0;
         int fd;
         if ((fd = open("/dev/mem", O_RDWR | O_SYNC)) != -1) {
-            bram_x_ptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_x);
-            bram_y_ptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_y);
-            bram_z_ptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_z);
-            bram_i_ptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_i);
+            ddr_pointer = (u64 *)mmap(NULL, ddr_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, ddr_ptr_base);
+            configs_pointer = (u64 *)mmap(NULL, configs_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, configs_ptr_base);
 
             hardware_ready=1;
         }
@@ -314,79 +312,37 @@ using namespace std::chrono;
 
 void Filters::do_hardwarefilter()
 {
-    long long int a_32points_x=0;
-    long long int a_32points_y=0;
-    long long int a_32points_z=0;
-    long long int a_32points_i=0;
-    int32_t a_64points_x[2];
-    int32_t a_64points_y[2];
-    int32_t a_64points_z[2];
-    int32_t a_64points_i[2];
 
     auto start = high_resolution_clock::now();
-
-    bram_x_ptr[0]= inputCloud->size();
-    bram_i_ptr[0]= parameter1;
+    configs_pointer[0]=0;
+    int config = 2+ (((int)parameter1)<<2);
     int i =0;
-    int pos_aux=0;
-    int bram_aux=1;
+    cout << "Storing points!"<<endl;
     for (auto &point : *inputCloud)
     {
-        if ( i == 0)
-        {
-            a_32points_x = (int16_t)(point.x*100);
-            a_32points_y = (int16_t)(point.y*100);
-            a_32points_z = (int16_t)(point.z*100);
-            a_32points_i = (int16_t)(point.intensity);
-            i++;
-
-        }
-        else {
-            a_32points_x = a_32points_x +((int16_t)(point.x*100)<<(16*i));
-            a_32points_y = a_32points_y +((int16_t)(point.y*100)<<(16*i));
-            a_32points_z = a_32points_z +((int16_t)(point.z*100)<<(16*i));
-            a_32points_i = a_32points_i +((int16_t)(point.intensity)<<(16*i));
-
-            i=0;
-            a_64points_x[pos_aux]=a_32points_x;
-            a_64points_y[pos_aux]=a_32points_y;
-            a_64points_z[pos_aux]=a_32points_z;
-            a_64points_i[pos_aux]=a_32points_i;
-
-
-            pos_aux++;
-
-            if(pos_aux==2)
-            {
-                memcpy((void*)(bram_x_ptr+bram_aux),a_64points_x,sizeof(int32_t)*2);
-                memcpy((void*)(bram_y_ptr+bram_aux),a_64points_y,sizeof(int32_t)*2);
-                memcpy((void*)(bram_z_ptr+bram_aux),a_64points_z,sizeof(int32_t)*2);
-                memcpy((void*)(bram_i_ptr+bram_aux),a_64points_i,sizeof(int32_t)*2);
-
-
-                //cout << "sended to mem"<<bram_aux<<endl;
-                bram_aux++;
-                pos_aux=0;
-
-            }
-        }
+        u64 point_compact=((int16_t)point.x*100)+(((int16_t)point.y*100)<<16)+(((int16_t)point.z*100)<<16*2)+(((int16_t)point.intensity)<<16*3);
+        ddr_pointer[i]= point_compact;
+        i ++;
     }
-    //cout << "points saved"<<endl;
-    bram_y_ptr[0]=0xffff;
+    cout << "points saved"<<endl;
+    configs_pointer[2]= inputCloud->size();
+    configs_pointer[0] = config;
+    cout<< "sended start signal!";
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     frameTime = duration.count();
+    cout << "points saved in:"<<frameTime<<" ms;"<<endl;
     //cout <<"sended start signal"<<endl;
     int hardware_finish =1;
     while (hardware_finish) {
-        int value = bram_z_ptr[0];
+        int value = configs_pointer[1];
         if(value >=1)
             hardware_finish=0;
         else
              usleep(1);
     }
-    bram_z_ptr[0]=0;
-    //cout<<"received finish signal"<<endl;
+    configs_pointer[0]=0;
+    cout<<"received finish signal with removed points :"<<configs_pointer[1]<<endl;
     auto start2 = high_resolution_clock::now();
 
     decode_pointcloud();
@@ -395,7 +351,7 @@ void Filters::do_hardwarefilter()
     auto stop2 = high_resolution_clock::now();
     auto duration2 = duration_cast<milliseconds>(stop - start);
     frameTime += duration2.count();
-
+    cout << "Decoding took: "<<duration2.count()<<" ms;"<<endl;
 
 
 }
@@ -449,33 +405,15 @@ void Filters::apply_filters()
 void Filters::decode_pointcloud()
 {
     OutputCloud->clear();
-    int16_t point_x[4];
-    int16_t point_y[4];
-    int16_t point_z[4];
-    int16_t point_i[4];
 
-    for (int i = 1; i < inputCloud->size()/4; ++i) {
-
-
-        memcpy((void*)point_x,(bram_x_ptr+i),sizeof(int32_t)*2);
-        memcpy((void*)point_y,(bram_y_ptr+i),sizeof(int32_t)*2);
-        memcpy((void*)point_z,(bram_z_ptr+i),sizeof(int32_t)*2);
-        memcpy((void*)point_i,(bram_i_ptr+i),sizeof(int32_t)*2);
-
-
-
-        for (int j = 0; j < 4; j++) {
-            //cout<<"entrei aqui"<<endl;
-
-            pcl::PointXYZI point;
-            point.x = point_x[j]/100.0;
-            point.y= point_y[j]/100.0;
-            point.z= point_z[j]/100.0;
-            point.intensity = point_i[j];
-            //cout << "x: "<< point.x<<"y: "<<point.y<<"z: "<<point.z<<endl;
-            if(point.x!=0 )
-                 OutputCloud->push_back(point);
+    for (int i = 0; i < inputCloud->size(); ++i) {
+        if(ddr_pointer[i]!=0)
+        {
+            OutputCloud->push_back((*inputCloud)[i]);
         }
+
+       //cout << "x: "<< point.x<<"y: "<<point.y<<"z: "<<point.z<<endl;
+
 
 
     }
