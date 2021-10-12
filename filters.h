@@ -24,6 +24,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 
 using namespace std;
 
+
 class Filters
 {
 public:

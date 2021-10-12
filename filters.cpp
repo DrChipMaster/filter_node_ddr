@@ -320,8 +320,10 @@ void Filters::do_hardwarefilter()
     cout << "Storing points!"<<endl;
     for (auto &point : *inputCloud)
     {
-        u64 point_compact=((int16_t)point.x*100)+(((int16_t)point.y*100)<<16)+(((int16_t)point.z*100)<<16*2)+(((int8_t)point.intensity)<<16*3);
-        ddr_pointer[i]= point_compact;
+        int32_t a_64points[2];
+        a_64points[0] = ((int16_t)point.x*100)+(((int16_t)point.y*100)<<16);
+        a_64points[1]=(((int16_t)point.z*100))+(((int8_t)point.intensity)<<16);
+        memcpy((void*)(ddr_pointer+i),a_64points,sizeof(int32_t)*2);
         i ++;
     }
     cout << "points saved"<<endl;
