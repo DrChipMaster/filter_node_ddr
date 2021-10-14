@@ -336,17 +336,23 @@ void Filters::do_hardwarefilter()
     cout << "points saved in:"<<frameTime<<" ms;"<<endl;
     //cout <<"sended start signal"<<endl;
     int hardware_finish =1;
+    start = high_resolution_clock::now();
+    int value = 0;
     while (hardware_finish) {
-        int value = configs_pointer[1];
+       value = configs_pointer[1];
         if(value >=1)
             hardware_finish=0;
         else
              usleep(1);
     }
-    configs_pointer[0]=0;
-    cout<<"received finish signal with removed points :"<<configs_pointer[1]<<endl;
-    auto start2 = high_resolution_clock::now();
 
+    configs_pointer[0]=0;
+    cout<<"received finish signal with removed points :"<<value<<endl;
+    auto start2 = high_resolution_clock::now();
+    stop = high_resolution_clock::now();
+    auto duration3 = duration_cast<milliseconds>(stop - start);
+    frameTime = duration3.count();
+    cout << "points saved in:"<<frameTime<<" ms;"<<endl;
     decode_pointcloud();
 
 
