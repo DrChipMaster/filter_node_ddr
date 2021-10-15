@@ -318,13 +318,14 @@ void Filters::do_hardwarefilter()
     int config = 2+ (((int)parameter1)<<2);
     int i =0;
     cout << "Storing points!"<<endl;
-    for (auto &point : *inputCloud)
+    //for (auto &point : *inputCloud)
+    for (int var = 0; var < inputCloud->size(); ++var)
     {
         int32_t a_64points[2];
-        a_64points[0] = ((int16_t)point.x*100)+(((int16_t)point.y*100)<<16);
-        a_64points[1]=(((int16_t)point.z*100))+(((int8_t)point.intensity)<<16);
-        memcpy((void*)(ddr_pointer+i),a_64points,sizeof(int32_t)*2);
-        i ++;
+        a_64points[0] = ((int16_t)(*inputCloud)[var].x*100)+(((int16_t)(*inputCloud)[var].y*100)<<16);
+        a_64points[1]=(((int16_t)(*inputCloud)[var].z*100))+(((int16_t)(*inputCloud)[var].intensity)<<16);
+        cout<<"Point: "<<var<<" :"<<hex<<a_64points[1]<<" "<< hex << a_64points[0]<<endl;
+        memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
     cout << "points saved"<<endl;
     configs_pointer[2]= inputCloud->size();
