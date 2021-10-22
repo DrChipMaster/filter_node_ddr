@@ -340,6 +340,7 @@ void Filters::do_hardwarefilter()
     int hardware_finish =1;
     start = high_resolution_clock::now();
     int value = 0;
+    usleep(10);
     while (hardware_finish) {
        value = configs_pointer[1];
         if(value >=1)
@@ -349,7 +350,7 @@ void Filters::do_hardwarefilter()
     }
 
     configs_pointer[0]=0;
-    configs_pointer[1] =0;
+    //configs_pointer[1] =0;
     cout<<"received finish signal with removed points :"<<value<<endl;
     auto start2 = high_resolution_clock::now();
     stop = high_resolution_clock::now();
