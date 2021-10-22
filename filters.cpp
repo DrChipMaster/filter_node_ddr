@@ -430,7 +430,7 @@ void Filters::decode_pointcloud()
     }
     //cout <<"end filter with point cloud size: "<<OutputCloud->size()<<endl;
     //pcl::io::savePCDFileASCII("plswork.pcd", *OutputCloud);
-    cout <<"Total points Removed are :"<<inputCloud->size()-inliners.size()<<endl;
+    cout <<"Total points Removed are :"<<inputCloud->size()-OutputCloud->size()<<endl;
 
 
 }
