@@ -322,9 +322,9 @@ void Filters::do_hardwarefilter()
     int32_t a_64points[2];
     for (int var = 0; var < inputCloud->size(); var++)
     {   
-        a_64points[0] = ((int16_t)((*inputCloud)[var].x*100))+(((int16_t)((*inputCloud)[var].y*100))<<16);
+        a_64points[0] = ((int16_t)((*inputCloud)[var].x*100))+(((int16_t)((*inputCloud)[var].y*100+1))<<16);
         //cout<<"Point.x: " <<hex<<(int16_t)((*inputCloud)[var].x*100)<<"point.y"<<(int16_t)((*inputCloud)[var].y*100)<<endl;
-        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity))<<16);
+        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity+1))<<16);
         //cout<<"Point: "<<var<<" :"<<hex<<a_64points[1]<<" "<< hex << a_64points[0]<<endl;
         memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
@@ -349,6 +349,7 @@ void Filters::do_hardwarefilter()
     }
 
     configs_pointer[0]=0;
+    configs_pointer[1] =0;
     cout<<"received finish signal with removed points :"<<value<<endl;
     auto start2 = high_resolution_clock::now();
     stop = high_resolution_clock::now();
@@ -445,6 +446,7 @@ void Filters::filter_pointROR(pcl::PointXYZI point)
     {
         inliners.push_back(point);
     }
+    cout <<"Total points Removed are :"<<inputCloud->size()-inliners.size()<<endl;
 }
 
 
