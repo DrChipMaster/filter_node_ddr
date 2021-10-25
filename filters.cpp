@@ -350,7 +350,7 @@ void Filters::do_hardwarefilter()
     }
 
     configs_pointer[0]=0;
-    //configs_pointer[1] =0;
+    configs_pointer[1] =0;
     cout<<"received finish signal with removed points :"<<value<<endl;
     auto start2 = high_resolution_clock::now();
     stop = high_resolution_clock::now();
@@ -361,7 +361,7 @@ void Filters::do_hardwarefilter()
 
 
     auto stop2 = high_resolution_clock::now();
-    auto duration2 = duration_cast<milliseconds>(stop - start);
+    auto duration2 = duration_cast<milliseconds>(stop2 - start);
     frameTime += duration2.count();
     cout << "Decoding took: "<<duration2.count()<<" ms;"<<endl;
 
