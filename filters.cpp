@@ -317,7 +317,7 @@ void Filters::do_hardwarefilter()
     configs_pointer[0]=0;
     int config = 2+ (((int)parameter1)<<2);
     int i =0;
-    cout << "Storing points!"<<endl;
+    //cout << "Storing points!"<<endl;
     //for (auto &point : *inputCloud)
     int32_t a_64points[2];
     for (int var = 0; var < inputCloud->size(); var++)
@@ -328,17 +328,17 @@ void Filters::do_hardwarefilter()
         //cout<<"Point: "<<var<<" :"<<hex<<a_64points[1]<<" "<< hex << a_64points[0]<<endl;
         memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
-    cout << "points saved"<<endl;
+    //cout << "points saved"<<endl;
     configs_pointer[2]= inputCloud->size();
     configs_pointer[0] = config;
-    cout<< "sended start signal!";
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-    frameTime = duration.count();
-    cout << "points saved in:"<<frameTime<<" ms;"<<endl;
+    //cout<< "sended start signal!";
+    //auto stop = high_resolution_clock::now();
+    //auto duration = duration_cast<milliseconds>(stop - start);
+    //frameTime = duration.count();
+    //cout << "points saved in:"<<frameTime<<" ms;"<<endl;
     //cout <<"sended start signal"<<endl;
     int hardware_finish =1;
-    start = high_resolution_clock::now();
+    //start = high_resolution_clock::now();
     int value = 0;
     usleep(10);
     while (hardware_finish) {
@@ -352,17 +352,17 @@ void Filters::do_hardwarefilter()
     configs_pointer[0]=0;
     configs_pointer[1] =0;
     cout<<"received finish signal with removed points :"<<value<<endl;
-    auto start2 = high_resolution_clock::now();
-    stop = high_resolution_clock::now();
-    auto duration3 = duration_cast<milliseconds>(stop - start);
-    frameTime = duration3.count();
-    cout << "points saved in:"<<frameTime<<" ms;"<<endl;
+    //auto start2 = high_resolution_clock::now();
+    //auto stop = high_resolution_clock::now();
+    //auto duration3 = duration_cast<milliseconds>(stop - start);
+    //frameTime = duration3.count();
+    //cout << "points saved in:"<<frameTime<<" ms;"<<endl;
     decode_pointcloud();
 
 
     auto stop2 = high_resolution_clock::now();
     auto duration2 = duration_cast<milliseconds>(stop2 - start);
-    frameTime += duration2.count();
+    frameTime = duration2.count();
     cout << "Decoding took: "<<duration2.count()<<" ms;"<<endl;
 
 
@@ -431,7 +431,7 @@ void Filters::decode_pointcloud()
     }
     //cout <<"end filter with point cloud size: "<<OutputCloud->size()<<endl;
     //pcl::io::savePCDFileASCII("plswork.pcd", *OutputCloud);
-    cout <<"Total points Removed are :"<<inputCloud->size()-OutputCloud->size()<<endl;
+    //cout <<"Total points Removed are :"<<inputCloud->size()-OutputCloud->size()<<endl;
 
 
 }
