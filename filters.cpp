@@ -19,6 +19,7 @@
 
 Filters::Filters()
 {
+    frame_id =0;
     pcl2_Header_seq=0;
     filter_number = 1;
     parameter1 = 0;
@@ -329,6 +330,7 @@ void Filters::do_hardwarefilter()
         memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
     //cout << "points saved"<<endl;
+    configs_pointer[4]= frame_id;
     configs_pointer[2]= inputCloud->size();
     configs_pointer[0] = config;
     //cout<< "sended start signal!";
@@ -340,18 +342,35 @@ void Filters::do_hardwarefilter()
     int hardware_finish =1;
     //start = high_resolution_clock::now();
     int value = 0;
+    int hardware_frame_id=0;
     usleep(10);
     while (hardware_finish) {
        value = configs_pointer[1];
         if(value >=1)
+        {
+            bool frame_differ =1;
+            while (frame_differ) {
+                hardware_frame_id = configs_pointer[5];
+                if(hardware_frame_id == frame_id)
+                {
+                    frame_differ =0;
+                }
+                //else if(hardware_frame_id>0)
+                //{
+                //    frame_differ =0;
+                //    cout <<"Some sync error occour, frames are de_synced"<<endl;
+                //}
+            }
             hardware_finish=0;
+        }
         else
              usleep(1);
     }
 
     configs_pointer[0]=0;
     configs_pointer[1] =0;
-    cout<<"received finish signal with removed points :"<<value<<endl;
+    cout<<"Frame: "<<frame_id<<"received finish signal with removed points :"<<value<<endl;
+    frame_id++;
     //auto start2 = high_resolution_clock::now();
     //auto stop = high_resolution_clock::now();
     //auto duration3 = duration_cast<milliseconds>(stop - start);

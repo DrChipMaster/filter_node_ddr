@@ -55,6 +55,7 @@ private:
     float parameter5;
     bool use_multi;
     bool hardware_ready;
+    long unsigned int frame_id;
 
     boost::thread *m_worker_thread1;
     boost::thread *m_worker_thread2;
@@ -90,7 +91,7 @@ private:
 
      //Hardware parameters:
      unsigned int ddr_size = 0x060000;
-     unsigned int configs_size = 0x0003;
+     unsigned int configs_size = 0x0006;
      off_t ddr_ptr_base = 0x0F000000; // physical base address
      off_t configs_ptr_base =0xA0000000;  // physical base address
      u64 *ddr_pointer;
