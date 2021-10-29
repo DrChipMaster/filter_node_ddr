@@ -314,6 +314,7 @@ using namespace std::chrono;
 void Filters::do_hardwarefilter()
 {
 
+    frame_id++;
     auto start = high_resolution_clock::now();
     configs_pointer[0]=0;
     int config = 2+ (((int)parameter1)<<2);
@@ -370,7 +371,6 @@ void Filters::do_hardwarefilter()
     configs_pointer[0]=0;
     configs_pointer[1] =0;
     cout<<"Frame: "<<frame_id<<"received finish signal with removed points :"<<value<<endl;
-    frame_id++;
     //auto start2 = high_resolution_clock::now();
     //auto stop = high_resolution_clock::now();
     //auto duration3 = duration_cast<milliseconds>(stop - start);
