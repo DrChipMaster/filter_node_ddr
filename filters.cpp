@@ -326,7 +326,7 @@ void Filters::do_hardwarefilter()
     {   
         a_64points[0] = ((int16_t)((*inputCloud)[var].x*100))+(((int16_t)((*inputCloud)[var].y*100+1))<<16);
         //cout<<"Point.x: " <<hex<<(int16_t)((*inputCloud)[var].x*100)<<"point.y"<<(int16_t)((*inputCloud)[var].y*100)<<endl;
-        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity+1))<<16);
+        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity*parameter5+1))<<16);
         //cout<<"Point: "<<var<<" :"<<hex<<a_64points[1]<<" "<< hex << a_64points[0]<<endl;
         memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
