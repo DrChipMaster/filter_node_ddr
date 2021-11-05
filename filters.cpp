@@ -28,6 +28,7 @@ Filters::Filters()
     parameter4 = 0.1;
     parameter5 = 0.1;
     use_multi  = false;
+    intensity_mult =1;
     hardware_ready = 0;
         int fd;
         if ((fd = open("/dev/mem", O_RDWR | O_SYNC)) != -1) {
@@ -316,6 +317,7 @@ void Filters::do_hardwarefilter()
 
     frame_id++;
     auto start = high_resolution_clock::now();
+    if(parameter1 !=1)intensity_mult = parameter5;
     configs_pointer[0]=0;
     uint32_t config = 2+ ((((uint)parameter1)<<2)+((uint)parameter3<<6) +((uint)parameter2<<10)+((uint)parameter4<<14)+((uint)parameter5<<23));
     int i =0;
@@ -326,7 +328,7 @@ void Filters::do_hardwarefilter()
     {   
         a_64points[0] = ((int16_t)((*inputCloud)[var].x*100))+(((int16_t)((*inputCloud)[var].y*100+1))<<16);
         //cout<<"Point.x: " <<hex<<(int16_t)((*inputCloud)[var].x*100)<<"point.y"<<(int16_t)((*inputCloud)[var].y*100)<<endl;
-        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity*parameter5+1))<<16);
+        a_64points[1]=((int16_t)((*inputCloud)[var].z*100))+(((int16_t)((*inputCloud)[var].intensity*intensity_mult+1))<<16);
         //cout<<"Point: "<<var<<" :"<<hex<<a_64points[1]<<" "<< hex << a_64points[0]<<endl;
         memcpy((void*)(ddr_pointer+var),a_64points,sizeof(int32_t)*2);
     }
