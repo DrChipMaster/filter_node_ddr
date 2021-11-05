@@ -317,7 +317,7 @@ void Filters::do_hardwarefilter()
     frame_id++;
     auto start = high_resolution_clock::now();
     configs_pointer[0]=0;
-    uint32_t config = 2+ ((((uint)parameter1)<<2)+((uint)parameter3<<6) +((uint)parameter4<<10)+((uint)parameter2<<14)+((uint)parameter5<<23));
+    uint32_t config = 2+ ((((uint)parameter1)<<2)+((uint)parameter3<<6) +((uint)parameter2<<10)+((uint)parameter4<<14)+((uint)parameter5<<23));
     int i =0;
     //cout << "Storing points!"<<endl;
     //for (auto &point : *inputCloud)
