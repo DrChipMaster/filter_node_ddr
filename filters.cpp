@@ -316,7 +316,7 @@ void Filters::do_hardwarefilter()
 {
 
     frame_id++;
-    auto start = high_resolution_clock::now();
+    //auto start = high_resolution_clock::now();
     if(parameter1 !=1)intensity_mult = parameter5;
     configs_pointer[0]=0;
     uint32_t config = 2+ ((((uint)parameter1)<<2)+((uint)parameter3<<6) +((uint)parameter2<<10)+((uint)parameter4<<14)+((uint)parameter5<<23));
@@ -372,7 +372,7 @@ void Filters::do_hardwarefilter()
 
     configs_pointer[0]=0;
     configs_pointer[1] =0;
-    cout<<"Frame: "<<frame_id<<"received finish signal with removed points :"<<value<<endl;
+    //cout<<"Frame: "<<frame_id<<"received finish signal with removed points :"<<value<<endl;
     //auto start2 = high_resolution_clock::now();
     //auto stop = high_resolution_clock::now();
     //auto duration3 = duration_cast<milliseconds>(stop - start);
@@ -381,10 +381,10 @@ void Filters::do_hardwarefilter()
     decode_pointcloud();
 
 
-    auto stop2 = high_resolution_clock::now();
-    auto duration2 = duration_cast<milliseconds>(stop2 - start);
-    frameTime = duration2.count();
-    cout << "Decoding took: "<<duration2.count()<<" ms;"<<endl;
+    //auto stop2 = high_resolution_clock::now();
+    //auto duration2 = duration_cast<milliseconds>(stop2 - start);
+    //frameTime = duration2.count();
+    //cout << "Decoding took: "<<duration2.count()<<" ms;"<<endl;
 
 
 }
@@ -393,6 +393,8 @@ void Filters::do_hardwarefilter()
 
 void Filters::apply_filters()
 {
+    auto start = high_resolution_clock::now();
+
 
     switch (filter_number) {
     case 1:
@@ -426,9 +428,9 @@ void Filters::apply_filters()
         do_hardwarefilter();
         break;
     }
-    //auto stop = high_resolution_clock::now();
-    //auto duration = duration_cast<milliseconds>(stop - start);
-    //frameTime = duration.count();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+    frameTime = duration.count();
     emit_frametime();
     emit_exitpointcloud();
 
